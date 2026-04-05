@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Survey Form</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --ink: #1a1612;
+      --paper: #f5f0e8;
+      --cream: #ede8dc;
+      --accent: #c0392b;
+      --accent-light: #e8d5d3;
+      --gold: #b8922a;
+      --rule: #c8bfaf;
+      --muted: #7a6f62;
+      --field-bg: #faf7f2;
+      --field-border: #c8bfaf;
+      --field-focus: #1a1612;
+      --radius: 3px;
+      --section-gap: 2.8rem;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
+      background-color: var(--paper);
+      color: var(--ink);
+      min-height: 100vh;
+      padding: 0;
+    }
+
+    /* ── Masthead ── */
+    .masthead {
+      background: var(--ink);
+      color: var(--paper);
+      padding: 3.5rem 2rem 2.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .masthead::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 39px,
+        rgba(255,255,255,.04) 39px,
+        rgba(255,255,255,.04) 40px
+      );
+    }
+    .masthead-eyebrow {
+      font-family: 'DM Sans', sans-serif;
+      font-size: .68rem;
+      font-weight: 500;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+    .masthead h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -.01em;
+      position: relative;
+    }
+    .masthead-rule {
+      width: 3rem;
+      height: 2px;
+      background: var(--accent);
+      margin: 1.4rem auto;
+    }
+    .masthead-sub {
+      font-size: .92rem;
+      font-weight: 300;
+      color: #c8bfaf;
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* ── Progress bar ── */
+    .progress-bar {
+      height: 3px;
+      background: var(--cream);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--gold));
+      width: 0%;
+      transition: width .4s ease;
+    }
+
+    /* ── Layout ── */
+    .form-wrap {
+      max-width: 740px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 5rem;
+    }
+
+    form { display: flex; flex-direction: column; gap: var(--section-gap); }
+
+    /* ── Section headings ── */
+    .section-heading {
+      display: flex;
+      align-items: center;
+      gap: .9rem;
+      margin-bottom: 1.6rem;
+    }
+    .section-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--accent);
+      line-height: 1;
+      min-width: 2.2rem;
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .section-title small {
+      display: block;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .78rem;
+      font-weight: 400;
+      color: var(--muted);
+      margin-top: .15rem;
+      letter-spacing: .04em;
+    }
+
+    /* ── Divider ── */
+    .section-divider {
+      border: none;
+      border-top: 1px solid var(--rule);
+      margin: 0;
+    }
+
+    /* ── Field base ── */
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: .45rem;
+    }
+    .field-label {
+      font-size: .8rem;
+      font-weight: 500;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .field-label .req { color: var(--accent); margin-left: .15rem; }
+    .field-hint {
+      font-size: .78rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="date"],
+    input[type="time"],
+    select,
+    textarea {
+      width: 100%;
+      padding: .72rem 1rem;
+      background: var(--field-bg);
+      border: 1px solid var(--field-border);
+      border-radius: var(--radius);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .95rem;
+      font-weight: 400;
+      color: var(--ink);
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="date"]:focus,
+    input[type="time"]:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--field-focus);
+      box-shadow: 0 0 0 3px rgba(26,22,18,.08);
+    }
+    input::placeholder { color: #bbb3a8; }
+    textarea { resize: vertical; min-height: 120px; line-height: 1.6; }
+
+    /* custom select arrow */
+    .select-wrap { position: relative; }
+    .select-wrap::after {
+      content: '▾';
+      position: absolute;
+      right: 1rem; top: 50%; transform: translateY(-50%);
+      pointer-events: none;
+      color: var(--muted);
+      font-size: .85rem;
+    }
+
+    /* ── Two-col grid ── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+    @media (max-width: 540px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* ── Radio / Checkbox shared ── */
+    .choice-group { display: flex; flex-direction: column; gap: .55rem; }
+    .choice-row { display: flex; flex-direction: row; flex-wrap: wrap; gap: .55rem; }
+
+    .choice-item {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      cursor: pointer;
+      padding: .55rem .9rem;
+      border: 1px solid var(--field-border);
+      border-radius: var(--radius);
+      background: var(--field-bg);
+      transition: border-color .18s, background .18s;
+      font-size: .9rem;
+      user-select: none;
+      flex: 1 0 auto;
+    }
+    .choice-item:hover { border-color: var(--ink); background: #fff; }
+    .choice-item input { display: none; }
+    .choice-item.checked {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    /* custom radio/checkbox knob */
+    .knob {
+      width: 17px; height: 17px;
+      border: 1.5px solid var(--field-border);
+      flex-shrink: 0;
+      transition: border-color .15s, background .15s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .knob-radio { border-radius: 50%; }
+    .knob-check { border-radius: 2px; }
+    .choice-item.checked .knob {
+      border-color: var(--accent);
+      background: var(--accent);
+    }
+    .knob-inner {
+      display: none;
+      background: white;
+    }
+    .knob-radio .knob-inner {
+      width: 6px; height: 6px; border-radius: 50%;
+    }
+    .knob-check .knob-inner {
+      width: 10px; height: 7px;
+      background: none;
+      border-left: 2px solid white;
+      border-bottom: 2px solid white;
+      transform: rotate(-45deg) translate(1px, -1px);
+      display: none;
+    }
+    .choice-item.checked .knob-inner { display: block; }
+
+    /* ── Scale row (1–10 / stars) ── */
+    .scale-row {
+      display: flex;
+      gap: .4rem;
+      flex-wrap: wrap;
+    }
+    .scale-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .3rem;
+      cursor: pointer;
+    }
+    .scale-item input { display: none; }
+    .scale-bubble {
+      width: 40px; height: 40px;
+      border: 1.5px solid var(--field-border);
+      border-radius: var(--radius);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .85rem;
+      font-weight: 500;
+      color: var(--muted);
+      background: var(--field-bg);
+      transition: all .15s;
+    }
+    .scale-item:hover .scale-bubble { border-color: var(--ink); color: var(--ink); }
+    .scale-item.checked .scale-bubble {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: var(--paper);
+    }
+    .scale-label { font-size: .65rem; color: var(--muted); letter-spacing: .04em; }
+
+    /* ── Star scale ── */
+    .star-row { display: flex; gap: .35rem; flex-wrap: wrap; }
+    .star-item { cursor: pointer; }
+    .star-item input { display: none; }
+    .star-glyph {
+      font-size: 2rem;
+      color: var(--rule);
+      transition: color .15s, transform .15s;
+      display: block;
+      line-height: 1;
+    }
+    .star-item:hover .star-glyph,
+    .star-item.lit .star-glyph { color: var(--gold); transform: scale(1.15); }
+
+    /* ── Grid (satisfaction matrix) ── */
+    .grid-table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+    .grid-table th {
+      padding: .5rem .6rem;
+      text-align: center;
+      font-weight: 500;
+      font-size: .72rem;
+      letter-spacing: .05em;
+      color: var(--muted);
+      border-bottom: 1px solid var(--rule);
+    }
+    .grid-table th:first-child { text-align: left; }
+    .grid-table td {
+      padding: .6rem .6rem;
+      border-bottom: 1px solid var(--cream);
+      text-align: center;
+      vertical-align: middle;
+    }
+    .grid-table td:first-child {
+      text-align: left;
+      font-size: .88rem;
+      color: var(--ink);
+      padding-left: 0;
+    }
+    .grid-table tr:hover td { background: rgba(192,57,43,.04); }
+    .grid-radio { cursor: pointer; }
+    .grid-radio input { display: none; }
+    .grid-dot {
+      width: 20px; height: 20px;
+      border: 1.5px solid var(--field-border);
+      border-radius: 50%;
+      margin: 0 auto;
+      background: var(--field-bg);
+      transition: all .15s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .grid-radio:hover .grid-dot { border-color: var(--ink); }
+    .grid-radio.checked .grid-dot {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .grid-radio.checked .grid-dot::after {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: white;
+    }
+
+    /* ── Submit ── */
+    .submit-area {
+      text-align: center;
+      padding-top: .5rem;
+    }
+    .btn-submit {
+      display: inline-flex;
+      align-items: center;
+      gap: .7rem;
+      padding: .9rem 3rem;
+      background: var(--ink);
+      color: var(--paper);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .88rem;
+      font-weight: 500;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      border: 2px solid var(--ink);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background .2s, color .2s, transform .15s;
+    }
+    .btn-submit:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+    .btn-submit:active { transform: translateY(0); }
+    .btn-arrow { font-size: 1rem; }
+
+    .submit-note {
+      margin-top: .9rem;
+      font-size: .75rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .form-section {
+      animation: fadeUp .5s ease both;
+    }
+    .form-section:nth-child(1)  { animation-delay: .05s; }
+    .form-section:nth-child(2)  { animation-delay: .10s; }
+    .form-section:nth-child(3)  { animation-delay: .15s; }
+    .form-section:nth-child(4)  { animation-delay: .20s; }
+    .form-section:nth-child(5)  { animation-delay: .25s; }
+    .form-section:nth-child(6)  { animation-delay: .30s; }
+    .form-section:nth-child(7)  { animation-delay: .35s; }
+    .form-section:nth-child(8)  { animation-delay: .40s; }
+    .form-section:nth-child(9)  { animation-delay: .45s; }
+    .form-section:nth-child(10) { animation-delay: .50s; }
+    .form-section:nth-child(11) { animation-delay: .55s; }
+    .form-section:nth-child(12) { animation-delay: .60s; }
+    .form-section:nth-child(13) { animation-delay: .65s; }
+  </style>
+</head>
+<body>
+
+<div class="masthead">
+  <p class="masthead-eyebrow">Participant Survey &mdash; 2025 Edition</p>
+  <h1>Tell Us About<br>Your Experience</h1>
+  <div class="masthead-rule"></div>
+  <p class="masthead-sub">We value your perspective. This survey takes approximately 5–8 minutes to complete. All fields marked with <span style="color:var(--accent)">*</span> are required.</p>
+</div>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="form-wrap">
+  <form action="YOUR_GOOGLE_FORM_URL" method="POST" id="mainForm">
+
+    <!-- ① Full Name -->
+    <div class="form-section">
+      <div class="section-heading">
+        <span class="section-num">01</span>
+        <div class="section-title">Personal Details<small>Tell us who you are</small></div>
+      </div>
+      <div class="two-col">
+        <div class="field-group">
+          <label class="field-label" for="fullName">Full Name <span class="req">*</span></label>
+          <input type="text" id="fullName" name="entry.ID" placeholder="Jane Doe" required />
+        </div>
+        <!-- ② Email -->
+        <div class="field-group">
+          <label class="field-label" for="email">Primary Email <span class="req">*</span></label>
+          <input type="email" id="email" name="entry.ID" placeholder="jane@example.com" required />
+        </div>
+      </div>
+      <div class="two-col" style="margin-top:1rem">
+        <!-- ③ Phone -->
+        <div class="field-group">
+          <label class="field-label" for="phone">Contact Phone <span style="color:var(--muted);font-weight:300">(optional)</span></label>
+          <input type="text" id="phone" name="entry.ID" placeholder="+1 555 000 0000" />
+        </div>
+        <!-- ④ Date -->
+        <div class="field-group">
+          <label class="field-label" for="submitDate">Date of Submission <span class="req">*</span></label>
+          <input type="date" id="submitDate" name="entry.ID" required />
+        </div>
+      </div>
+    </div>
+
+    <hr class="section-divider"/>
+
+    <!-- ⑤ Preferred Time -->
+    <div class="form-section">
+      <div class="section-heading">
+        <span class="section-num">02</span>
+        <div class="section-title">Scheduling<small>When works best for you?</small></div>
+      </div>
+      <div class="field-group" style="max-width:280px">
+        <label class="field-label" for="callTime">Preferred Follow-up Time <span class="req">*</span></label>
+        <input type="time" id="callTime" name="entry.ID" required />
+      </div>
+    </div>
+
+    <hr class="section-divider"/>
+
+    <!-- ⑥ Region -->
+    <div class="form-section">
+      <div class="section-heading">
+        <span class="section-num">03</span>
+        <div class="section-title">Geographic Region<small>Where are you based?</small></div>
+      </div>
+      <div class="field-group" style="max-width:340px">
+        <label class="field-label" for="region">Select your region <span class="req">*</span></label>
+        <div class="select-wrap">
+          <select id="region" name="entry.ID" required>
+            <option value="" disabled selected>— Choose a region —</option>
+            <option value="North America">North America</option>
+            <option value="South America">South America</option>
+            <option value="Europe">Europe</option>
+            <option value="Asia">Asia</option>
+            <option value="Africa">Africa</option>
+            <option value="Australia/Oceania">Australia / Oceania</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <hr class="section-divider"/>
+
+    <!-- ⑦ Employment Status -->
+    <div class="form-section">
+      <div class="section-heading">
+        <span class="section-num">04</span>
+        <div class="section-title">Employment Status<small>Your current work situation</small></div>
+      </div>
+      <div class="choice-row" id="employment-group">
+        <label class="choice-item" data-group="employment">
+          <input type="radio" name="entry.ID" value="Employed Full-time" />
+          <span class="knob knob-radio"><span class="knob-inner"></span></span>
+          Employed Full-time
+        </label>
+        <label class="choice-item" data-group="employment">
+          <input type="radio" name="entry.ID" value="Employed Part-time" />
+          <span class="knob knob-radio"><span class="knob-inner"></span></span>
+          Employed Part-time
+        </label>
+        <label class="choice-item" data-group="employment">
+          <input type="radio" name="entry.ID" value="Self-Employed" />
+          <span class="knob knob-radio"><span class="knob-inner"></span></span>
+          Self-Employed
+        </label>
+        <label class="choice-item" data-group="employment">
+          <input type="radio" name="entry.ID" value="Student" />
+          <span class="knob knob-radio"><span class="knob-inner"></span></span>
+          Student
+        </label>
+        <label class="choice-item" data-group="employment">
+          <input type="radio" name="entry.ID" value="Unemployed" />
+          <span class="knob knob-radio"><span class="knob-inner"></span></span>
+          Unemployed
+        </label>
+        <label class="choice-item" data-group="employment">
+          <input type="radio" name="entry.ID" value="Retired" />
+          <span class="knob knob-radio"><span class="knob-inner"></span></span>
+          Retired
+        </label>
+      </div>
+    </div>
+
+    <hr class="section-divider"/>
+
+    <!-- ⑧ Areas of Interest (Checkboxes) -->
+    <div class="form-section">
+      <div class="section-heading">
+        <span class="section-num">05</span>
+        <div class="section-title">Areas of Interest<small>Select all that apply</small></div>
+      </div>
+      <div class="choice-row" id="interests-group">
+        <label class="choice-item">
+          <input type="checkbox" name="entry.ID" value="Technology" />
+          <span class="knob knob-check"><span class="knob-inner"></span></span>
+          Technology
+        </label>
+        <label class="choice-item">
+          <input type="checkbox" name="entry.ID" value="Finance" />
+          <span class="knob knob-check"><span class="knob-inner"></span></span>
+          Finance
+        </label>
+        <label class="choice-item">
+          <input type="checkbox" name="entry.ID" value="Health & Wellness" />
+          <span class="knob knob-check"><span class="knob-inner"></span></span>
+          Health &amp; Wellness
+        </label>
+        <label class="choice-item">
+          <input type="checkbox" name="entry.ID" value="Education" />
+          <span class="knob knob-check"><span class="knob-inner"></span></span>
+          Education
+        </label>
+        <label class="choice-item">
+          <input type="checkbox" name="entry.ID" value="Travel" />
+          <span class="knob knob-check"><span class="knob-inner"></span></span>
+          Travel
+        </label>
+        <label class="choice-item">
+          <input type="checkbox" name="entry.ID" value="Arts & Culture" />
+          <span class="knob knob-check"><span class="knob-inner"></span></span>
+          Arts &amp; Culture
+        </label>
+        <label class="choice-item">
+          <input type="checkbox" name="entry.ID" value="Sports" />
+          <span class="knob knob-check"><span class="knob-inner"></span></span>
+          Sports
+        </label>
+      </div>
+    </div>
+
+    <hr class="section-divider"/>
+
+    <!-- ⑨ Data Privacy Scale (1–10) -->
+    <div class="form-section">
+      <div class="section-heading">
+        <span class="section-num">06</span>
+        <div class="section-title">Data Privacy Importance<small>How strongly do you value data privacy?</small></div>
+      </div>
+      <div class="scale-row" id="privacy-group">
+        <script>
+          // rendered by JS below
+        </script>
+      </div>
+      <div style="display:flex;justify-content:space-between;max-width:440px;margin-top:.4rem">
+        <span style="font-size:.7rem;color:var(--muted)">Not important</span>
+        <span style="font-size:.7rem;color:var(--muted)">Extremely important</span>
+      </div>
+    </div>
+
+    <hr class="section-divider"/>
+
+    <!-- ⑩ Satisfaction Grid -->
+    <div class="form-section">
+      <div class="section-heading">
+        <span class="section-num">07</span>
+        <div class="section-title">Satisfaction Grid<small>Rate each aspect of your experience</small></div>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="grid-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Very<br>Dissatisfied</th>
+              <th>Dissatisfied</th>
+              <th>Neutral</th>
+              <th>Satisfied</th>
+              <th>Very<br>Satisfied</th>
+            </tr>
+          </thead>
+          <tbody id="satisfactionGrid"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <hr class="section-divider"/>
+
+    <!-- ⑪ Star Rating (1–5) -->
+    <div class="form-section">
+      <div class="section-heading">
+        <span class="section-num">08</span>
+        <div class="section-title">Factor Relevance<small>Rate on a 5-star scale</small></div>
+      </div>
+      <div class="star-row" id="starGroup">
+      </div>
+      <p id="starLabel" style="font-size:.8rem;color:var(--muted);margin-top:.6rem;min-height:1.2em"></p>
+    </div>
+
+    <hr class="section-divider"/>
+
+    <!-- ⑫ Duration -->
+    <div class="form-section">
+      <div class="section-heading">
+        <span class="section-num">09</span>
+        <div class="section-title">Estimated Duration<small>How long did this take you?</small></div>
+      </div>
+      <div class="field-group" style="max-width:240px">
+        <label class="field-label" for="duration">Duration (hh:mm:ss)</label>
+        <input type="text"
+               id="duration"
+               name="entry.ID"
+               placeholder="00:05:30"
+               pattern="^([0-9]{2}):([0-5][0-9]):([0-5][0-9])$"
+               title="Please enter time in hh:mm:ss format" />
+        <span class="field-hint">Format: hours : minutes : seconds</span>
+      </div>
+    </div>
+
+    <hr class="section-divider"/>
+
+    <!-- ⑬ Comments -->
+    <div class="form-section">
+      <div class="section-heading">
+        <span class="section-num">10</span>
+        <div class="section-title">Additional Comments<small>Anything else you'd like to share?</small></div>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="comments">Your feedback</label>
+        <textarea id="comments" name="entry.ID" placeholder="Share your thoughts, suggestions, or any other feedback here…"></textarea>
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <div class="submit-area form-section">
+      <button type="submit" class="btn-submit">
+        Submit Survey <span class="btn-arrow">→</span>
+      </button>
+      <p class="submit-note">Your responses are sent directly to our secure Google Form.</p>
+    </div>
+
+  </form>
+</div>
+
+<script>
+  /* ── Build privacy 1–10 scale ── */
+  const privacyGroup = document.getElementById('privacy-group');
+  const starLabels = ['', 'Not at all', 'Slightly', 'Somewhat', 'Moderately', 'Very', 'Quite', 'Rather', 'Highly', 'Very highly', 'Extremely'];
+  for (let i = 1; i <= 10; i++) {
+    const item = document.createElement('label');
+    item.className = 'scale-item';
+    item.dataset.group = 'privacy';
+    item.innerHTML = `
+      <input type="radio" name="entry.ID" value="${i}" />
+      <span class="scale-bubble">${i}</span>
+      <span class="scale-label">${starLabels[i]}</span>`;
+    privacyGroup.appendChild(item);
+  }
+
+  /* ── Build satisfaction grid ── */
+  const gridRows = ['Ease of navigation', 'Clarity of questions', 'Loading speed', 'Mobile compatibility'];
+  const gridCols = ['Very Dissatisfied', 'Dissatisfied', 'Neutral', 'Satisfied', 'Very Satisfied'];
+  const tbody    = document.getElementById('satisfactionGrid');
+  gridRows.forEach((row, ri) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${row}</td>`;
+    gridCols.forEach((col, ci) => {
+      const td = document.createElement('td');
+      td.innerHTML = `
+        <label class="grid-radio" data-group="grid-${ri}">
+          <input type="radio" name="entry.ID_grid_${ri}" value="${col}" />
+          <span class="grid-dot"></span>
+        </label>`;
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+
+  /* ── Build star rating ── */
+  const starGroup = document.getElementById('starGroup');
+  const starLabelEl = document.getElementById('starLabel');
+  const starDescriptions = ['', 'Poor relevance', 'Low relevance', 'Moderate relevance', 'High relevance', 'Excellent relevance'];
+  for (let i = 1; i <= 5; i++) {
+    const item = document.createElement('label');
+    item.className = 'star-item';
+    item.dataset.val = i;
+    item.innerHTML = `
+      <input type="radio" name="entry.ID" value="${i}" />
+      <span class="star-glyph">★</span>`;
+    starGroup.appendChild(item);
+  }
+
+  /* ── Unified interaction handler ── */
+  document.addEventListener('change', function(e) {
+    const el = e.target;
+
+    if (el.type === 'radio') {
+      // find parent label
+      const lbl = el.closest('label');
+
+      // choice-item radios (employment etc.)
+      if (lbl && lbl.classList.contains('choice-item')) {
+        const group = lbl.dataset.group;
+        if (group) {
+          document.querySelectorAll(`.choice-item[data-group="${group}"]`).forEach(l => l.classList.remove('checked'));
+          lbl.classList.add('checked');
+        }
+      }
+
+      // scale items
+      if (lbl && lbl.classList.contains('scale-item')) {
+        const group = lbl.dataset.group;
+        document.querySelectorAll(`.scale-item[data-group="${group}"]`).forEach(l => l.classList.remove('checked'));
+        lbl.classList.add('checked');
+      }
+
+      // grid radios
+      if (lbl && lbl.classList.contains('grid-radio')) {
+        const group = lbl.dataset.group;
+        document.querySelectorAll(`.grid-radio[data-group="${group}"]`).forEach(l => l.classList.remove('checked'));
+        lbl.classList.add('checked');
+      }
+
+      // star items
+      if (lbl && lbl.classList.contains('star-item')) {
+        const val = parseInt(lbl.dataset.val);
+        document.querySelectorAll('.star-item').forEach((s, idx) => {
+          s.classList.toggle('lit', idx < val);
+        });
+        starLabelEl.textContent = starDescriptions[val] || '';
+      }
+    }
+
+    if (el.type === 'checkbox') {
+      const lbl = el.closest('label');
+      if (lbl) lbl.classList.toggle('checked', el.checked);
+    }
+
+    updateProgress();
+  });
+
+  /* ── Progress bar ── */
+  function updateProgress() {
+    const inputs = document.querySelectorAll('input[required], select[required]');
+    let filled = 0;
+    inputs.forEach(inp => {
+      if (inp.type === 'radio') {
+        const group = inp.name;
+        if (document.querySelector(`input[name="${group}"]:checked`)) filled++;
+      } else if (inp.value.trim() !== '') filled++;
+    });
+    const pct = Math.min(100, Math.round((filled / inputs.length) * 100));
+    document.getElementById('progressFill').style.width = pct + '%';
+  }
+
+  /* ── Pre-fill today's date ── */
+  document.getElementById('submitDate').valueAsDate = new Date();
+  updateProgress();
+</script>
+
+</body>
+</html><noframes></noframes>
